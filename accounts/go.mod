@@ -37,4 +37,5 @@ replace (
 	github.com/owncloud/ocis/ocis-pkg => ../ocis-pkg
 	github.com/owncloud/ocis/settings => ../settings
 	google.golang.org/grpc => google.golang.org/grpc v1.26.0
+	github.com/cs3org/reva => github.com/aduffeck/reva v1.5.1-0.20210125145254-ec22a9fe6e13
 )

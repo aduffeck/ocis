@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"path"
@@ -77,6 +78,7 @@ func StorageHome(cfg *config.Config) *cli.Command {
 					cfg.Reva.Storages.Local.EnableHome = true
 					cfg.Reva.Storages.OwnCloud.EnableHome = true
 					cfg.Reva.Storages.S3.EnableHome = true
+					cfg.Reva.Storages.S3NG.EnableHome = true
 				}
 				rcfg := map[string]interface{}{
 					"core": map[string]interface{}{
@@ -123,6 +125,8 @@ func StorageHome(cfg *config.Config) *cli.Command {
 					},
 				}
 
+				logger.Error().
+					Msg(fmt.Sprintf("%#v", rcfg))
 				gr.Add(func() error {
 					runtime.RunWithOptions(
 						rcfg,

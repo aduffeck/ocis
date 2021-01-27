@@ -56,4 +56,5 @@ replace (
 	github.com/owncloud/ocis/web => ../web
 	github.com/owncloud/ocis/webdav => ../webdav
 	google.golang.org/grpc => google.golang.org/grpc v1.26.0
+	github.com/cs3org/reva => github.com/aduffeck/reva v1.5.1-0.20210125145254-ec22a9fe6e13
 )

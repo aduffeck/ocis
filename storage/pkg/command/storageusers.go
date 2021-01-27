@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"path"
@@ -122,6 +123,8 @@ func StorageUsers(cfg *config.Config) *cli.Command {
 						},
 					},
 				}
+				logger.Error().
+					Msg(fmt.Sprintf("%#v", rcfg))
 
 				gr.Add(func() error {
 					runtime.RunWithOptions(

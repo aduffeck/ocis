@@ -18,23 +18,13 @@ Basic file management like up and download, move, copy, properties, trash, versi
 -   [apiTrashbin/trashbinFilesFolders.feature:284](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinFilesFolders.feature#L284)
 -   [apiTrashbin/trashbinFilesFolders.feature:285](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinFilesFolders.feature#L285)
 
-#### [empty trashbin does not work](https://github.com/owncloud/product/issues/254)
--   [apiTrashbin/trashbinDelete.feature:37](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinDelete.feature#L37)
-
 #### [href in trashbin PROPFIND response is wrong](https://github.com/owncloud/ocis/issues/1120)
--   [apiTrashbin/trashbinDelete.feature:50](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinDelete.feature#L50)
 -   [apiTrashbin/trashbinDelete.feature:67](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinDelete.feature#L67)
 
 #### [href in trashbin PROPFIND response is wrong](https://github.com/owncloud/ocis/issues/1120)
 #### [QA trashcan cannot delete a deep tree](https://github.com/owncloud/ocis/issues/1077)
 -   [apiTrashbin/trashbinDelete.feature:107](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinDelete.feature#L107)
 -   [apiTrashbin/trashbinDelete.feature:123](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinDelete.feature#L123)
-
-#### [trashbin filename invalid for nested files/folders](https://github.com/owncloud/product/issues/255)
--   [apiTrashbin/trashbinFilesFolders.feature:44](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinFilesFolders.feature#L44)
--   [apiTrashbin/trashbinFilesFolders.feature:45](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinFilesFolders.feature#L45)
--   [apiTrashbin/trashbinFilesFolders.feature:60](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinFilesFolders.feature#L60)
--   [apiTrashbin/trashbinFilesFolders.feature:61](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiTrashbin/trashbinFilesFolders.feature#L61)
 
 ### [Review and fix the tests that have sharing step to work with ocis](https://github.com/owncloud/core/issues/38006)
 

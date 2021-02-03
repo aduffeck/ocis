@@ -320,34 +320,8 @@ Scenario Outline: try to create a folder that already exists
 -   [apiWebdavProperties1/createFolder.feature:99](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties1/createFolder.feature#L99)
 -   [apiWebdavProperties1/createFolder.feature:100](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties1/createFolder.feature#L100)
 
-#### [XML properties in webdav response not properly encoded](https://github.com/owncloud/ocis/issues/1296)
-Scenario Outline: Do a PROPFIND of various file names
--   [apiWebdavProperties2/getFileProperties.feature:37](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L37)
--   [apiWebdavProperties2/getFileProperties.feature:39](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L39)
--   [apiWebdavProperties2/getFileProperties.feature:40](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L40)
--   [apiWebdavProperties2/getFileProperties.feature:41](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L41)
--   [apiWebdavProperties2/getFileProperties.feature:43](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L43)
--   [apiWebdavProperties2/getFileProperties.feature:44](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L44)
-
-Scenario Outline: Do a PROPFIND of various folder names
--   [apiWebdavProperties2/getFileProperties.feature:59](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L59)
--   [apiWebdavProperties2/getFileProperties.feature:60](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L60)
--   [apiWebdavProperties2/getFileProperties.feature:61](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L61)
--   [apiWebdavProperties2/getFileProperties.feature:63](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L63)
--   [apiWebdavProperties2/getFileProperties.feature:64](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L64)
--   [apiWebdavProperties2/getFileProperties.feature:66](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L66)
--   [apiWebdavProperties2/getFileProperties.feature:67](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L67)
--   [apiWebdavProperties2/getFileProperties.feature:68](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L68)
--   [apiWebdavProperties2/getFileProperties.feature:70](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L70)
--   [apiWebdavProperties2/getFileProperties.feature:71](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L71)
-
 ### [Different webdav properties from core](https://github.com/owncloud/ocis/issues/1302)
 Scenario Outline: Propfind the last modified date of a folder using webdav api `Property "d:getlastmodified" found with value "Wed, 20 Jan 2021 14:39:31 +0000", expected "/^[MTWFS][uedhfriatno]{2},\s(\d){2}\s[JFMAJSOND][anebrpyulgctov]{2}\s\d{4}\s\d{2}:\d{2}:\d{2} GMT$/"`
--   [apiWebdavProperties2/getFileProperties.feature:301](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L301)
--   [apiWebdavProperties2/getFileProperties.feature:302](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L302)
-    Scenario Outline: Propfind the content type of a folder using webdav api `Property "d:getcontenttype" found with value "httpd/unix-directory", expected "#^$#" or "#^$#"`
--   [apiWebdavProperties2/getFileProperties.feature:314](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L314)
--   [apiWebdavProperties2/getFileProperties.feature:315](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L315)
     Scenario Outline: Propfind the content type of a file using webdav api `Property "d:getcontenttype" found with value "text/plain; charset=utf-8", expected "#^text/plain$#" or "#^text/plain$#"`
 -   [apiWebdavProperties2/getFileProperties.feature:327](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L327)
 -   [apiWebdavProperties2/getFileProperties.feature:328](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavProperties2/getFileProperties.feature#L328)

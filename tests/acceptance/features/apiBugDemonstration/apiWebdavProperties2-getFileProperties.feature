@@ -60,7 +60,7 @@ Feature: get file properties
       | new         | /upload         | dav\/files\/%username%\/upload                                                 |
 #      | new         | /strängé folder | dav\/files\/%username%\/str%C3%A4ng%C3%A9%20folder                             |
 #      | new         | /C++ folder     | dav\/files\/%username%\/C\+\+%20folder                                         |
-#      | new         | /नेपाली         | dav\/files\/%username%\/%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2%E0%A5%80 |
+#      | new         | /नेपाली         | dav\/files\/%username%\/%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2%E0%A5%80  |
       | new         | /folder #2.txt  | dav\/files\/%username%\/folder%20%232\.txt                                     |
 #      | new         | /folder &2.txt  | dav\/files\/%username%\/folder%20&2\.txt                                       |
 

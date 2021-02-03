@@ -4,13 +4,8 @@
 Basic file management like up and download, move, copy, properties, trash, versions and chunking.
 
 #### [Implement Trashbin Feature for ocis storage](https://github.com/owncloud/product/issues/209)
-
--   [apiWebdavEtagPropagation2/restoreFromTrash.feature:26](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L26)
--   [apiWebdavEtagPropagation2/restoreFromTrash.feature:27](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L27)
 -   [apiWebdavEtagPropagation2/restoreFromTrash.feature:48](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L48)
 -   [apiWebdavEtagPropagation2/restoreFromTrash.feature:49](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L49)
--   [apiWebdavEtagPropagation2/restoreFromTrash.feature:68](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L68)
--   [apiWebdavEtagPropagation2/restoreFromTrash.feature:69](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L69)
 -   [apiWebdavEtagPropagation2/restoreFromTrash.feature:90](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L90)
 -   [apiWebdavEtagPropagation2/restoreFromTrash.feature:91](https://github.com/owncloud/core/blob/master/tests/acceptance/features/apiWebdavEtagPropagation2/restoreFromTrash.feature#L91)
 

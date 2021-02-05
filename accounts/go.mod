@@ -7,7 +7,7 @@ require (
 	contrib.go.opencensus.io/exporter/ocagent v0.6.0
 	contrib.go.opencensus.io/exporter/zipkin v0.1.1
 	github.com/cs3org/go-cs3apis v0.0.0-20210104105209-0d3ecb3453dc
-	github.com/cs3org/reva v1.5.2-0.20210202151306-38d8df2516eb
+	github.com/cs3org/reva v1.5.2-0.20210204140658-65d8f9ae8588
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/render v1.0.1
 	github.com/gofrs/uuid v3.3.0+incompatible
@@ -24,12 +24,12 @@ require (
 	github.com/restic/calens v0.2.0
 	github.com/rs/zerolog v1.20.0
 	github.com/spf13/viper v1.7.0
-	github.com/stretchr/testify v1.6.1
-	go.opencensus.io v0.22.5
-	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
-	golang.org/x/net v0.0.0-20200822124328-c89045814202
+	github.com/stretchr/testify v1.7.0
+	go.opencensus.io v0.22.6
+	golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
+	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
 	google.golang.org/genproto v0.0.0-20200624020401-64a14ca9d1ad
-	google.golang.org/grpc v1.33.2
+	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 )
 

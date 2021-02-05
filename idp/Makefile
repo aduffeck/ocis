@@ -167,17 +167,19 @@ ci-go-generate: # CI runs ci-node-generate automatically before this target
 ci-node-generate: assets
 
 .PHONY: assets
-assets: assets/identifier/static \
+assets: yarn-build \
+		assets/identifier/static \
 		assets/identifier/static/logo.svg \
-		yarn-build \
 		assets/identifier/static/favicon.ico
 
 assets/identifier/static:
 	mkdir -p assets/identifier/static
 
+.PHONY: assets/identifier/static/logo.svg # force overwrite
 assets/identifier/static/logo.svg:
 	curl -o assets/identifier/static/logo.svg ${LOGO_URL}
 
+.PHONY: assets/identifier/static/favicon.ico # force overwrite
 assets/identifier/static/favicon.ico:
 	curl -o assets/identifier/static/favicon.ico ${FAVICON_URL}
 

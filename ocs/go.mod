@@ -8,13 +8,14 @@ require (
 	contrib.go.opencensus.io/exporter/zipkin v0.1.1
 	github.com/UnnoTed/fileb0x v1.1.4
 	github.com/cs3org/go-cs3apis v0.0.0-20210104105209-0d3ecb3453dc
-	github.com/cs3org/reva v1.5.2-0.20210204140658-65d8f9ae8588
+	github.com/cs3org/reva v1.5.2-0.20210208143958-990ed1b1815d
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/render v1.0.1
 	github.com/golang/protobuf v1.4.3
 	github.com/micro/cli/v2 v2.1.2
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/oklog/run v1.1.0
+	github.com/oleiade/reflections v1.0.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/openzipkin/zipkin-go v0.2.2
 	github.com/owncloud/ocis/accounts v0.5.3-0.20201103104733-ff2c41028d9b

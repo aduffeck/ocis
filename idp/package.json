@@ -61,7 +61,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "render-if": "^0.1.1",
-    "resolve": "1.15.0",
+    "resolve": "1.20.0",
     "resolve-url-loader": "3.1.1",
     "sass-loader": "8.0.2",
     "semver": "6.3.0",

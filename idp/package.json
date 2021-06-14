@@ -84,7 +84,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "devDependencies": {
-    "@babel/runtime": "7.13.10",
+    "@babel/runtime": "7.14.5",
     "eslint": "^7.21.0",
     "eslint-plugin-i18n-text": "^1.0.0",
     "eslint-plugin-jest": "^24.2.1",

@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "axios": "^0.27.2",
-    "core-js": "^3.23.3",
+    "core-js": "^3.25.1",
     "debounce": "^1.2.1",
     "lodash-es": "^4.17.21",
     "qs": "^6.11.0",

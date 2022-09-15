@@ -9,9 +9,9 @@ require (
 	github.com/ReneKroon/ttlcache/v2 v2.11.0
 	github.com/blevesearch/bleve/v2 v2.3.4
 	github.com/blevesearch/bleve_index_api v1.0.3
-	github.com/coreos/go-oidc/v3 v3.3.0
+	github.com/coreos/go-oidc/v3 v3.4.0
 	github.com/cs3org/go-cs3apis v0.0.0-20220818202316-e92afdddac6d
-	github.com/cs3org/reva/v2 v2.10.0
+	github.com/cs3org/reva/v2 v2.10.1-0.20220914095102-44dc469bd48b
 	github.com/disintegration/imaging v1.6.2
 	github.com/ggwhite/go-masker v1.0.9
 	github.com/go-chi/chi/v5 v5.0.7
@@ -33,7 +33,7 @@ require (
 	github.com/go-micro/plugins/v4/wrapper/monitoring/prometheus v1.1.0
 	github.com/go-micro/plugins/v4/wrapper/trace/opencensus v1.1.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
-	github.com/gofrs/uuid v4.2.0+incompatible
+	github.com/gofrs/uuid v4.3.0+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/golang/protobuf v1.5.2
 	github.com/gookit/config/v2 v2.1.5
@@ -60,17 +60,17 @@ require (
 	github.com/stretchr/testify v1.8.0
 	github.com/test-go/testify v1.1.4
 	github.com/thejerf/suture/v4 v4.0.2
-	github.com/tus/tusd v1.9.1
-	github.com/urfave/cli/v2 v2.14.0
+	github.com/tus/tusd v1.9.2
+	github.com/urfave/cli/v2 v2.16.3
 	github.com/xhit/go-simple-mail/v2 v2.11.0
 	go-micro.dev/v4 v4.8.1
 	go.etcd.io/bbolt v1.3.6
 	go.opencensus.io v0.23.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.34.0
-	go.opentelemetry.io/otel v1.9.0
+	go.opentelemetry.io/otel v1.10.0
 	go.opentelemetry.io/otel/exporters/jaeger v1.9.0
 	go.opentelemetry.io/otel/sdk v1.9.0
-	go.opentelemetry.io/otel/trace v1.9.0
+	go.opentelemetry.io/otel/trace v1.10.0
 	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
 	golang.org/x/exp v0.0.0-20220518171630-0b5c67f07fdf
 	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a
@@ -103,7 +103,7 @@ require (
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
-	github.com/aws/aws-sdk-go v1.44.61 // indirect
+	github.com/aws/aws-sdk-go v1.44.94 // indirect
 	github.com/beevik/etree v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect

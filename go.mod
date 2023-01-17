@@ -48,7 +48,7 @@ require (
 	github.com/libregraph/lico v0.54.1-0.20220325072321-31efc3995d63
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
-	github.com/nats-io/nats-server/v2 v2.9.4
+	github.com/nats-io/nats-server/v2 v2.9.11
 	github.com/oklog/run v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/onsi/ginkgo v1.16.5
@@ -75,13 +75,13 @@ require (
 	go.opentelemetry.io/otel/exporters/jaeger v1.11.2
 	go.opentelemetry.io/otel/sdk v1.11.2
 	go.opentelemetry.io/otel/trace v1.11.2
-	golang.org/x/crypto v0.3.0
+	golang.org/x/crypto v0.5.0
 	golang.org/x/exp v0.0.0-20221026004748-78e5e7837ae6
 	golang.org/x/image v0.2.0
-	golang.org/x/net v0.3.0
+	golang.org/x/net v0.5.0
 	golang.org/x/oauth2 v0.1.0
-	golang.org/x/term v0.3.0
-	golang.org/x/text v0.5.0
+	golang.org/x/term v0.4.0
+	golang.org/x/text v0.6.0
 	google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
@@ -276,7 +276,7 @@ require (
 	go.uber.org/zap v1.23.0 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	golang.org/x/tools v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

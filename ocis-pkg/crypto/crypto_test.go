@@ -40,7 +40,7 @@ var _ = Describe("Crypto", func() {
 	Describe("Creating key / certificate pair", func() {
 		Context("For ocis-proxy in the location of the user config directory", func() {
 			It(fmt.Sprintf("Creates the cert / key tuple in: %s", filepath.Join(userConfigDir, "ocis")), func() {
-				if err := crypto.GenCert(config.Proxy.HTTP.TLSCert, config.Proxy.HTTP.TLSKey, log.NopLogger()); err != nil {
+				if err := crypto.GenCert("localhost", config.Proxy.HTTP.TLSCert, config.Proxy.HTTP.TLSKey, config.Commons.InternalRootCA, config.InternalRootKey, log.NopLogger()); err != nil {
 					Fail(err.Error())
 				}
 
@@ -66,10 +66,10 @@ var _ = Describe("Crypto", func() {
 			keyOne = filepath.Join(userConfigDir, "ocis/one.key")
 			crtTwo = filepath.Join(userConfigDir, "ocis/two.cert")
 			keyTwo = filepath.Join(userConfigDir, "ocis/two.key")
-			if err := crypto.GenCert(crtOne, keyOne, log.NopLogger()); err != nil {
+			if err := crypto.GenCert("localhost", crtOne, keyOne, "", "", log.NopLogger()); err != nil {
 				Fail(err.Error())
 			}
-			if err := crypto.GenCert(crtTwo, keyTwo, log.NopLogger()); err != nil {
+			if err := crypto.GenCert("localhost", crtTwo, keyTwo, "", "", log.NopLogger()); err != nil {
 				Fail(err.Error())
 			}
 		})

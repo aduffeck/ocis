@@ -9,6 +9,7 @@ import (
 	"github.com/oklog/run"
 	"github.com/owncloud/ocis/v2/ocis-pkg/broker"
 	"github.com/owncloud/ocis/v2/ocis-pkg/config/configlog"
+	"github.com/owncloud/ocis/v2/ocis-pkg/service/http"
 	"github.com/owncloud/ocis/v2/ocis-pkg/version"
 	"github.com/owncloud/ocis/v2/services/ocdav/pkg/config"
 	"github.com/owncloud/ocis/v2/services/ocdav/pkg/config/parser"
@@ -38,6 +39,11 @@ func Server(cfg *config.Config) *cli.Command {
 
 			defer cancel()
 
+			tlsConfig, err := http.BuildTlsConfig(cfg.HTTP.Addr, "", "", cfg.Commons.InternalRootCA, cfg.Commons.InternalRootKey, logger)
+			if err != nil {
+				return err
+			}
+
 			gr.Add(func() error {
 				// init reva shared config explicitly as the go-micro based ocdav does not use
 				// the reva runtime. But we need e.g. the shared client settings to be initialized
@@ -60,7 +66,6 @@ func Server(cfg *config.Config) *cli.Command {
 					ocdav.WebdavNamespace(cfg.WebdavNamespace),
 					ocdav.SharesNamespace(cfg.SharesNamespace),
 					ocdav.Timeout(cfg.Timeout),
-					ocdav.Insecure(cfg.Insecure),
 					ocdav.PublicURL(cfg.PublicURL),
 					ocdav.Prefix(cfg.HTTP.Prefix),
 					ocdav.GatewaySvc(cfg.Reva.Address),
@@ -75,7 +80,8 @@ func Server(cfg *config.Config) *cli.Command {
 					ocdav.Broker(broker.NoOp{}),
 					// ocdav.FavoriteManager() // FIXME needs a proper persistence implementation https://github.com/owncloud/ocis/issues/1228
 					// ocdav.LockSystem(), // will default to the CS3 lock system
-					// ocdav.TLSConfig() // tls config for the http server
+					ocdav.TLSConfig(tlsConfig), // tls config for the http server
+					ocdav.InternalRootCA(cfg.Commons.InternalRootCA),
 					ocdav.MetricsEnabled(true),
 					ocdav.MetricsNamespace("ocis"),
 				}

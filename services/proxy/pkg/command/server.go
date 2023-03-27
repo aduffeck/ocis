@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"net/http"
 	"time"
@@ -192,12 +193,20 @@ func loadMiddlewares(ctx context.Context, logger log.Logger, cfg *config.Config)
 			Msg("Failed to create reva gateway service client")
 	}
 
+	tlsconfig := &tls.Config{
+		MinVersion:         tls.VersionTLS12,
+		InsecureSkipVerify: cfg.OIDC.Insecure, //nolint:gosec
+	}
+	if cfg.Commons.InternalRootCA != "" {
+		certs := x509.NewCertPool()
+		if !certs.AppendCertsFromPEM([]byte(cfg.Commons.InternalRootCA)) {
+			logger.Fatal().Msg("Error initializing reverse proxy. Adding CA cert failed")
+		}
+		tlsconfig.RootCAs = certs
+	}
 	var oidcHTTPClient = &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				MinVersion:         tls.VersionTLS12,
-				InsecureSkipVerify: cfg.OIDC.Insecure, //nolint:gosec
-			},
+			TLSClientConfig:   tlsconfig,
 			DisableKeepAlives: true,
 		},
 		Timeout: time.Second * 10,

@@ -77,7 +77,7 @@ func RegisterHTTPEndpoint(ctx context.Context, serviceID, uuid, addr string, ver
 	node.Metadata["registry"] = ocisRegistry.String()
 	node.Metadata["server"] = "http"
 	node.Metadata["transport"] = "http"
-	node.Metadata["protocol"] = "http"
+	node.Metadata["protocol"] = "https"
 
 	service := &registry.Service{
 		Name:      serviceID,

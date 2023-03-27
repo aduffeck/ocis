@@ -55,6 +55,8 @@ func Server(cfg *config.Config) *cli.Command {
 					http.Context(ctx),
 					http.Config(cfg),
 					http.Metrics(metrics),
+					http.InternalRootCA(cfg.Commons.InternalRootCA),
+					http.InternalRootKey(cfg.Commons.InternalRootKey),
 				)
 
 				if err != nil {

@@ -61,6 +61,7 @@ func SharingConfigFromStruct(cfg *config.Config) map[string]interface{} {
 							"service_user_id":     cfg.UserSharingDrivers.CS3.SystemUserID,
 							"service_user_idp":    cfg.UserSharingDrivers.CS3.SystemUserIDP,
 							"machine_auth_apikey": cfg.UserSharingDrivers.CS3.SystemUserAPIKey,
+							"internal_root_ca":    cfg.Commons.InternalRootCA,
 						},
 						"jsoncs3": map[string]interface{}{
 							"gateway_addr":        cfg.Reva.Address,
@@ -68,6 +69,7 @@ func SharingConfigFromStruct(cfg *config.Config) map[string]interface{} {
 							"service_user_id":     cfg.UserSharingDrivers.JSONCS3.SystemUserID,
 							"service_user_idp":    cfg.UserSharingDrivers.JSONCS3.SystemUserIDP,
 							"machine_auth_apikey": cfg.UserSharingDrivers.JSONCS3.SystemUserAPIKey,
+							"internal_root_ca":    cfg.Commons.InternalRootCA,
 							"ttl":                 cfg.UserSharingDrivers.JSONCS3.CacheTTL,
 							"events": map[string]interface{}{
 								"natsaddress":          cfg.Events.Addr,

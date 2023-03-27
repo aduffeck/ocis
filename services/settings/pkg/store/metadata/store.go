@@ -60,7 +60,7 @@ func (s *Store) Init() {
 		return
 	}
 
-	mdc := &CachedMDC{next: NewMetadataClient(s.cfg.Metadata)}
+	mdc := &CachedMDC{next: NewMetadataClient(s.cfg)}
 	if err := s.initMetadataClient(mdc); err != nil {
 		s.Logger.Error().Err(err).Msg("error initializing metadata client")
 	}
@@ -83,8 +83,8 @@ func New(cfg *config.Config) settings.Manager {
 }
 
 // NewMetadataClient returns the MetadataClient
-func NewMetadataClient(cfg config.Metadata) MetadataClient {
-	mdc, err := metadata.NewCS3Storage(cfg.GatewayAddress, cfg.StorageAddress, cfg.SystemUserID, cfg.SystemUserIDP, cfg.SystemUserAPIKey)
+func NewMetadataClient(cfg *config.Config) MetadataClient {
+	mdc, err := metadata.NewCS3Storage(cfg.Metadata.GatewayAddress, cfg.Metadata.StorageAddress, cfg.Metadata.SystemUserID, cfg.Metadata.SystemUserIDP, cfg.Metadata.SystemUserAPIKey, cfg.Commons.InternalRootCA)
 	if err != nil {
 		log.Fatal("error connecting to mdc:", err)
 	}

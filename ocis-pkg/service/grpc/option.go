@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/owncloud/ocis/v2/ocis-pkg/log"
+	"github.com/owncloud/ocis/v2/ocis-pkg/shared"
 	"github.com/urfave/cli/v2"
 )
 
@@ -12,6 +13,7 @@ type Option func(o *Options)
 
 // Options defines the available options for this package.
 type Options struct {
+	Commons    shared.Commons
 	Logger     log.Logger
 	Namespace  string
 	Name       string

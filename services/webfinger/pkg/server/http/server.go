@@ -23,6 +23,8 @@ func Server(opts ...Option) (ohttp.Service, error) {
 	service := options.Service
 
 	svc, err := ohttp.NewService(
+		ohttp.InternalRootCA(options.Config.Commons.InternalRootCA),
+		ohttp.InternalRootKey(options.Config.Commons.InternalRootKey),
 		ohttp.TLSConfig(options.Config.HTTP.TLS),
 		ohttp.Logger(options.Logger),
 		ohttp.Namespace(options.Config.HTTP.Namespace),

@@ -40,7 +40,7 @@ func DefaultConfig() *config.Config {
 			Name: "storage-system",
 		},
 		Reva:          shared.DefaultRevaConfig(),
-		DataServerURL: "http://localhost:9216/data",
+		DataServerURL: "https://127.0.0.1:9216/data",
 		Driver:        "ocis",
 		Drivers: config.Drivers{
 			OCIS: config.OCISDriver{

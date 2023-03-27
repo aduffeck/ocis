@@ -1,12 +1,25 @@
 package revaconfig
 
 import (
+	"fmt"
+
 	userpb "github.com/cs3org/go-cs3apis/cs3/identity/user/v1beta1"
+	"github.com/owncloud/ocis/v2/ocis-pkg/crypto"
 	"github.com/owncloud/ocis/v2/services/storage-system/pkg/config"
 )
 
 // StorageSystemFromStruct will adapt an oCIS config struct into a reva mapstructure to start a reva service.
-func StorageSystemFromStruct(cfg *config.Config) map[string]interface{} {
+func StorageSystemFromStruct(cfg *config.Config) (map[string]interface{}, error) {
+	var err error
+	cert := []byte("")
+	key := []byte("")
+	if cfg.Commons.InternalRootCA != "" && cfg.Commons.InternalRootKey != "" {
+		cert, key, err = crypto.CertKeyPair(cfg.HTTP.Addr, cfg.Commons.InternalRootCA, cfg.Commons.InternalRootKey)
+		if err != nil {
+			return nil, fmt.Errorf("error creating temporary self-signed certificate: %w", err)
+		}
+	}
+
 	rcfg := map[string]interface{}{
 		"core": map[string]interface{}{
 			"tracing_enabled":      cfg.Tracing.Enabled,
@@ -114,6 +127,8 @@ func StorageSystemFromStruct(cfg *config.Config) map[string]interface{} {
 		"http": map[string]interface{}{
 			"network": cfg.HTTP.Protocol,
 			"address": cfg.HTTP.Addr,
+			"cert":    string(cert),
+			"key":     string(key),
 			// no datagateway needed as the metadata clients directly talk to the dataprovider with the simple protocol
 			"services": map[string]interface{}{
 				"dataprovider": map[string]interface{}{
@@ -147,7 +162,7 @@ func StorageSystemFromStruct(cfg *config.Config) map[string]interface{} {
 			},
 		},
 	}
-	return rcfg
+	return rcfg, nil
 }
 
 func metadataDrivers(cfg *config.Config) map[string]interface{} {

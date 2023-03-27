@@ -111,6 +111,9 @@ func EnsureCommons(cfg *config.Config) {
 	if cfg.OcisURL != "" {
 		cfg.Commons.OcisURL = cfg.OcisURL
 	}
+
+	cfg.Commons.InternalRootCA = cfg.InternalRootCA
+	cfg.Commons.InternalRootKey = cfg.InternalRootKey
 }
 
 // Validate checks that all required configs are set. If a required config value

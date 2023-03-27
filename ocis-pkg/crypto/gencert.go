@@ -1,19 +1,22 @@
 package crypto
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
+	"math/big"
 	"net"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/owncloud/ocis/v2/ocis-pkg/log"
-	mtls "go-micro.dev/v4/util/tls"
 )
 
 var (
@@ -22,14 +25,7 @@ var (
 
 // GenCert generates TLS-Certificates. This function has side effects: it creates the respective certificate / key pair at
 // the destination locations unless the tuple already exists, if that is the case, this is a noop.
-func GenCert(certName string, keyName string, l log.Logger) error {
-	var pk *rsa.PrivateKey
-	var err error
-
-	pk, err = rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return err
-	}
+func GenCert(address, certName, keyName, rootCA, rootKey string, l log.Logger) error {
 
 	_, certErr := os.Stat(certName)
 	_, keyErr := os.Stat(keyName)
@@ -41,34 +37,119 @@ func GenCert(certName string, keyName string, l log.Logger) error {
 		return nil
 	}
 
-	if err := persistCertificate(certName, l, pk); err != nil {
-		l.Fatal().Err(err).Msg("failed to store certificate")
+	cert, key, err := CertKeyPair(address, rootCA, rootKey)
+	if err != nil {
+		return err
 	}
-
-	if err := persistKey(keyName, l, pk); err != nil {
+	if err := os.MkdirAll(filepath.Dir(certName), 0755); err != nil {
+		l.Fatal().Err(err).Msg("failed to store certificate")
+		return err
+	}
+	if err := os.WriteFile(certName, []byte(cert), 0600); err != nil {
+		l.Fatal().Err(err).Msg("failed to store certificate")
+		return err
+	}
+	if err := os.WriteFile(keyName, []byte(key), 0600); err != nil {
 		l.Fatal().Err(err).Msg("failed to store key")
+		return err
 	}
 
 	return nil
 }
 
-// GenTempCertForAddr generates temporary TLS-Certificates in memory.
-func GenTempCertForAddr(addr string) (tls.Certificate, error) {
-	subjects := defaultHosts
+// CertKeyPair generates temporary cert/key pair in memory.
+func CertKeyPair(addr, rootCAPEM, rootKeyPEM string) ([]byte, []byte, error) {
+	block, _ := pem.Decode([]byte(rootCAPEM))
+	if block == nil {
+		return nil, nil, fmt.Errorf("invalid internal root CA")
+	}
+	rootCA, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	if host, _, err := net.SplitHostPort(addr); err == nil && host != "" {
+	block, _ = pem.Decode([]byte(rootKeyPEM))
+	if block == nil {
+		return nil, nil, fmt.Errorf("invalid internal root key")
+	}
+	rootKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	subjects := defaultHosts
+	if host, _, err := net.SplitHostPort(addr); err == nil && host != "" && host != "0.0.0.0" && host != "127.0.0.1" {
 		subjects = []string{host}
 	}
-	return mtls.Certificate(subjects...)
+
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	cert := &x509.Certificate{
+		Issuer:       rootCA.Subject,
+		SerialNumber: serialNumber,
+		Subject: pkix.Name{
+			Organization: []string{"Company, INC."},
+		},
+		NotBefore:    time.Now(),
+		NotAfter:     time.Now().AddDate(10, 0, 0),
+		SubjectKeyId: []byte{1, 2, 3, 4, 6},
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+	}
+	for _, h := range subjects {
+		if ip := net.ParseIP(h); ip != nil {
+			cert.IPAddresses = append(cert.IPAddresses, ip)
+		} else {
+			cert.DNSNames = append(cert.DNSNames, h)
+		}
+	}
+	certPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	certBytes, err := x509.CreateCertificate(rand.Reader, cert, rootCA, &certPrivKey.PublicKey, rootKey)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Sign certificate
+
+	// create public key
+	certOut := bytes.NewBuffer(nil)
+	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
+
+	// create private key
+	keyOut := bytes.NewBuffer(nil)
+	b := x509.MarshalPKCS1PrivateKey(certPrivKey)
+	if err != nil {
+		return nil, nil, err
+	}
+	pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: b})
+
+	return certOut.Bytes(), keyOut.Bytes(), nil
+}
+
+// GenTempCertForAddr generates temporary TLS-Certificates in memory.
+func GenTempCertForAddr(addr, rootCAPEM, rootKeyPEM string) (tls.Certificate, error) {
+	cert, key, err := CertKeyPair(addr, rootCAPEM, rootKeyPEM)
+	if err != nil {
+		return tls.Certificate{}, err
+	}
+	return tls.X509KeyPair(cert, key)
 }
 
 // persistCertificate generates a certificate using pk as private key and proceeds to store it into a file named certName.
-func persistCertificate(certName string, l log.Logger, pk interface{}) error {
+func persistCertificate(certName string, l log.Logger, parent *x509.Certificate, pk interface{}) error {
 	if err := ensureExistsDir(certName); err != nil {
 		return fmt.Errorf("creating certificate destination: " + certName)
 	}
 
-	certificate, err := generateCertificate(pk)
+	certificate, err := generateCertificate(parent, pk)
 	if err != nil {
 		return fmt.Errorf("creating certificate: " + filepath.Dir(certName))
 	}
@@ -93,7 +174,7 @@ func persistCertificate(certName string, l log.Logger, pk interface{}) error {
 }
 
 // genCert generates a self signed certificate using a random rsa key.
-func generateCertificate(pk interface{}) ([]byte, error) {
+func generateCertificate(parent *x509.Certificate, pk interface{}) ([]byte, error) {
 	for _, h := range defaultHosts {
 		if ip := net.ParseIP(h); ip != nil {
 			acmeTemplate.IPAddresses = append(acmeTemplate.IPAddresses, ip)

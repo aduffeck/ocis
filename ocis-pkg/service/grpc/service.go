@@ -37,7 +37,7 @@ func NewService(opts ...Option) (Service, error) {
 		} else {
 			// Generate a self-signed server certificate on the fly. This requires the clients
 			// to connect with InsecureSkipVerify.
-			cert, err = ociscrypto.GenTempCertForAddr(sopts.Address)
+			cert, err = ociscrypto.GenTempCertForAddr(sopts.Address, sopts.Commons.InternalRootCA, sopts.Commons.InternalRootKey)
 			if err != nil {
 				return Service{}, fmt.Errorf("grpc service error creating temporary self-signed certificate: %w", err)
 			}

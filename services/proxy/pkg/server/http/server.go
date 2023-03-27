@@ -24,7 +24,7 @@ func Server(opts ...Option) (http.Service, error) {
 
 		if os.IsNotExist(certErr) || os.IsNotExist(keyErr) {
 			// GenCert has side effects as it writes 2 files to the binary running location
-			if err := pkgcrypto.GenCert(httpCfg.TLSCert, httpCfg.TLSKey, l); err != nil {
+			if err := pkgcrypto.GenCert(options.Config.HTTP.Addr, httpCfg.TLSCert, httpCfg.TLSKey, options.Config.Commons.InternalRootCA, options.Config.Commons.InternalRootKey, l); err != nil {
 				l.Fatal().Err(err).Msgf("Could not generate test-certificate")
 				os.Exit(1)
 			}
@@ -45,6 +45,8 @@ func Server(opts ...Option) (http.Service, error) {
 		http.Namespace(options.Config.HTTP.Namespace),
 		http.Context(options.Context),
 		http.Flags(options.Flags...),
+		http.InternalRootCA(options.Config.Commons.InternalRootCA),
+		http.InternalRootKey(options.Config.Commons.InternalRootKey),
 	)
 	if err != nil {
 		options.Logger.Error().

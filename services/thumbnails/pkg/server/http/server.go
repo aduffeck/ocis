@@ -24,6 +24,8 @@ func Server(opts ...Option) (http.Service, error) {
 		http.Namespace(options.Config.HTTP.Namespace),
 		http.Address(options.Config.HTTP.Addr),
 		http.Context(options.Context),
+		http.InternalRootCA(options.Config.Commons.InternalRootCA),
+		http.InternalRootKey(options.Config.Commons.InternalRootKey),
 	)
 	if err != nil {
 		options.Logger.Error().

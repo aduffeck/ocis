@@ -49,7 +49,7 @@ func NewMDC(s *Store) error {
 	case "unit":
 		mdc = &MockedMetadataClient{data: make(map[string][]byte)}
 	case "integration":
-		mdc = NewMetadataClient(defaults.DefaultConfig().Metadata)
+		mdc = NewMetadataClient(defaults.DefaultConfig())
 	}
 	return s.initMetadataClient(mdc)
 }

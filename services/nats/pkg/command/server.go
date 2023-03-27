@@ -41,7 +41,7 @@ func Server(cfg *config.Config) *cli.Command {
 			var tlsConf *tls.Config
 			if cfg.Nats.EnableTLS {
 				// Generate a self-signing cert if no certificate is present
-				if err := pkgcrypto.GenCert(cfg.Nats.TLSCert, cfg.Nats.TLSKey, logger); err != nil {
+				if err := pkgcrypto.GenCert(cfg.Nats.Host, cfg.Nats.TLSCert, cfg.Nats.TLSKey, cfg.Commons.InternalRootCA, cfg.Commons.InternalRootKey, logger); err != nil {
 					logger.Fatal().Err(err).Msgf("Could not generate test-certificate")
 				}
 

@@ -29,6 +29,8 @@ func Server(opts ...Option) (ohttp.Service, error) {
 		ohttp.Namespace(options.Config.HTTP.Namespace),
 		ohttp.Context(options.Context),
 		ohttp.Flags(options.Flags...),
+		ohttp.InternalRootCA(options.Config.Commons.InternalRootCA),
+		ohttp.InternalRootKey(options.Config.Commons.InternalRootKey),
 	)
 	if err != nil {
 		options.Logger.Error().

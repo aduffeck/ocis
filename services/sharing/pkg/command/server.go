@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"time"
 
 	"github.com/cs3org/reva/v2/cmd/revad/runtime"
 	"github.com/gofrs/uuid"
@@ -59,6 +60,7 @@ func Server(cfg *config.Config) *cli.Command {
 
 			rcfg := revaconfig.SharingConfigFromStruct(cfg)
 
+			time.Sleep(5 * time.Second)
 			gr.Add(func() error {
 				runtime.RunWithOptions(rcfg, pidFile, runtime.WithLogger(&logger.Logger))
 				return nil

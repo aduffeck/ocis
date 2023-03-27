@@ -2,17 +2,20 @@ package http
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/owncloud/ocis/v2/ocis-pkg/broker"
+	"github.com/owncloud/ocis/v2/ocis-pkg/log"
 	"github.com/owncloud/ocis/v2/ocis-pkg/registry"
 
 	mhttps "github.com/go-micro/plugins/v4/server/http"
-	ociscrypto "github.com/owncloud/ocis/v2/ocis-pkg/crypto"
+	crypto "github.com/owncloud/ocis/v2/ocis-pkg/crypto"
 	"go-micro.dev/v4"
 	"go-micro.dev/v4/server"
+	"go-micro.dev/v4/transport"
 )
 
 // Service simply wraps the go-micro web service.
@@ -24,37 +27,13 @@ type Service struct {
 func NewService(opts ...Option) (Service, error) {
 	noopBroker := broker.NoOp{}
 	sopts := newOptions(opts...)
-	var mServer server.Server
-	if sopts.TLSConfig.Enabled {
-		var cert tls.Certificate
-		var err error
-		if sopts.TLSConfig.Cert != "" {
-			cert, err = tls.LoadX509KeyPair(sopts.TLSConfig.Cert, sopts.TLSConfig.Key)
-			if err != nil {
-				sopts.Logger.Error().Err(err).
-					Str("cert", sopts.TLSConfig.Cert).
-					Str("key", sopts.TLSConfig.Key).
-					Msg("error loading server certifcate and key")
-				return Service{}, fmt.Errorf("error loading server certificate and key: %w", err)
-			}
-		} else {
-			// Generate a self-signed server certificate on the fly. This requires the clients
-			// to connect with InsecureSkipVerify.
-			sopts.Logger.Warn().Str("address", sopts.Address).
-				Msg("No server certificate configured. Generating a temporary self-signed certificate")
-			cert, err = ociscrypto.GenTempCertForAddr(sopts.Address)
-			if err != nil {
-				return Service{}, fmt.Errorf("error creating temporary self-signed certificate: %w", err)
-			}
-		}
-		tlsConfig := &tls.Config{
-			Certificates: []tls.Certificate{cert},
-		}
-		mServer = mhttps.NewServer(server.TLSConfig(tlsConfig))
-	} else {
-		mServer = mhttps.NewServer()
+
+	tlsConfig, err := BuildTlsConfig(sopts.Address, sopts.TLSConfig.Cert, sopts.TLSConfig.Key, sopts.InternalRootCA, sopts.InternalRootKey, sopts.Logger)
+	if err != nil {
+		return Service{}, err
 	}
 
+	mServer := mhttps.NewServer(server.TLSConfig(tlsConfig))
 	wopts := []micro.Option{
 		micro.Server(mServer),
 		micro.Broker(noopBroker),
@@ -66,10 +45,49 @@ func NewService(opts ...Option) (Service, error) {
 		micro.Registry(registry.GetRegistry()),
 		micro.RegisterTTL(time.Second * 30),
 		micro.RegisterInterval(time.Second * 10),
+		micro.Transport(transport.NewHTTPTransport(transport.TLSConfig(tlsConfig))),
 	}
 	if sopts.TLSConfig.Enabled {
 		wopts = append(wopts, micro.Metadata(map[string]string{"use_tls": "true"}))
 	}
 
 	return Service{micro.NewService(wopts...)}, nil
+}
+
+func BuildTlsConfig(address, certPath, keyPath, rootCA, rootKey string, l log.Logger) (*tls.Config, error) {
+	var cert tls.Certificate
+	certPool := x509.NewCertPool()
+
+	var err error
+	if certPath != "" && keyPath != "" {
+		cert, err = tls.LoadX509KeyPair(certPath, keyPath)
+		if err != nil {
+			l.Error().Err(err).
+				Str("cert", certPath).
+				Str("key", keyPath).
+				Msg("error loading server certifcate and key")
+			return nil, fmt.Errorf("error loading server certificate and key: %w", err)
+		}
+	} else {
+		// Generate a self-signed server certificate on the fly
+		l.Warn().Str("address", address).
+			Msg("No server certificate configured. Generating a temporary self-signed certificate")
+		cert, err = crypto.GenTempCertForAddr(address, rootCA, rootKey)
+		if err != nil {
+			return nil, fmt.Errorf("error creating temporary self-signed certificate: %w", err)
+		}
+	}
+
+	if rootCA != "" {
+		ok := certPool.AppendCertsFromPEM([]byte(rootCA))
+		if !ok {
+			l.Error().Msg("failed to add the internal root CA to the certpool")
+		}
+	}
+
+	return &tls.Config{
+		NextProtos:   []string{"h2", "http/1.1"},
+		Certificates: []tls.Certificate{cert},
+		RootCAs:      certPool,
+	}, nil
 }

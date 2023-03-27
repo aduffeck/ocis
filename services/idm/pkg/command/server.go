@@ -62,7 +62,7 @@ func start(ctx context.Context, logger log.Logger, cfg *config.Config) error {
 
 	if cfg.IDM.LDAPSAddr != "" {
 		// Generate a self-signing cert if no certificate is present
-		if err := pkgcrypto.GenCert(cfg.IDM.Cert, cfg.IDM.Key, logger); err != nil {
+		if err := pkgcrypto.GenCert(cfg.IDM.LDAPSAddr, cfg.IDM.Cert, cfg.IDM.Key, cfg.Commons.InternalRootCA, cfg.Commons.InternalRootKey, logger); err != nil {
 			logger.Fatal().Err(err).Msgf("Could not generate test-certificate")
 		}
 	}

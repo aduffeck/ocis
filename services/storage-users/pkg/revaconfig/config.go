@@ -1,11 +1,24 @@
 package revaconfig
 
 import (
+	"fmt"
+
+	"github.com/owncloud/ocis/v2/ocis-pkg/crypto"
 	"github.com/owncloud/ocis/v2/services/storage-users/pkg/config"
 )
 
 // StorageUsersConfigFromStruct will adapt an oCIS config struct into a reva mapstructure to start a reva service.
-func StorageUsersConfigFromStruct(cfg *config.Config) map[string]interface{} {
+func StorageUsersConfigFromStruct(cfg *config.Config) (map[string]interface{}, error) {
+	var err error
+	cert := []byte("")
+	key := []byte("")
+	if cfg.Commons.InternalRootCA != "" && cfg.Commons.InternalRootKey != "" {
+		cert, key, err = crypto.CertKeyPair(cfg.HTTP.Addr, cfg.Commons.InternalRootCA, cfg.Commons.InternalRootKey)
+		if err != nil {
+			return nil, fmt.Errorf("error creating temporary self-signed certificate: %w", err)
+		}
+	}
+
 	rcfg := map[string]interface{}{
 		"core": map[string]interface{}{
 			"tracing_enabled":      cfg.Tracing.Enabled,
@@ -57,6 +70,8 @@ func StorageUsersConfigFromStruct(cfg *config.Config) map[string]interface{} {
 		"http": map[string]interface{}{
 			"network": cfg.HTTP.Protocol,
 			"address": cfg.HTTP.Addr,
+			"cert":    string(cert),
+			"key":     string(key),
 			"middlewares": map[string]interface{}{
 				"requestid": map[string]interface{}{},
 			},
@@ -101,5 +116,5 @@ func StorageUsersConfigFromStruct(cfg *config.Config) map[string]interface{} {
 			"readonly": map[string]interface{}{},
 		}
 	}
-	return rcfg
+	return rcfg, nil
 }

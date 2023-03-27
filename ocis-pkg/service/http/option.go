@@ -14,15 +14,17 @@ type Option func(o *Options)
 
 // Options defines the available options for this package.
 type Options struct {
-	Logger    log.Logger
-	TLSConfig shared.HTTPServiceTLS
-	Namespace string
-	Name      string
-	Version   string
-	Address   string
-	Handler   http.Handler
-	Context   context.Context
-	Flags     []cli.Flag
+	Logger          log.Logger
+	TLSConfig       shared.HTTPServiceTLS
+	InternalRootCA  string
+	InternalRootKey string
+	Namespace       string
+	Name            string
+	Version         string
+	Address         string
+	Handler         http.Handler
+	Context         context.Context
+	Flags           []cli.Flag
 }
 
 // newOptions initializes the available default options.
@@ -91,5 +93,19 @@ func Flags(flags ...cli.Flag) Option {
 func TLSConfig(config shared.HTTPServiceTLS) Option {
 	return func(o *Options) {
 		o.TLSConfig = config
+	}
+}
+
+// InternalRootCA provides a function to set the InternalRootCA option.
+func InternalRootCA(ca string) Option {
+	return func(o *Options) {
+		o.InternalRootCA = ca
+	}
+}
+
+// InternalRootKey provides a function to set the InternalRootKey option.
+func InternalRootKey(key string) Option {
+	return func(o *Options) {
+		o.InternalRootKey = key
 	}
 }

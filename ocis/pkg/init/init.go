@@ -149,6 +149,8 @@ type Nats struct {
 // - recurse through the nodes and delete empty / default ones
 // - marshal it to yaml
 type OcisConfig struct {
+	InternalRootCA    string       `yaml:"internal_root_ca"`
+	InternalRootKey   string       `yaml:"internal_root_key"`
 	TokenManager      TokenManager `yaml:"token_manager"`
 	MachineAuthAPIKey string       `yaml:"machine_auth_api_key"`
 	SystemUserAPIKey  string       `yaml:"system_user_api_key"`
@@ -266,11 +268,17 @@ func CreateConfig(insecure, forceOverwrite bool, configPath, adminPassword strin
 	if err != nil {
 		return fmt.Errorf("could not generate random password for thumbnailsTransferSecret: %s", err)
 	}
+	internalRootCA, internalRootKey, err := generators.GenerateCAAndKey()
+	if err != nil {
+		return fmt.Errorf("could not generate internal CA: %s", err)
+	}
 
 	cfg := OcisConfig{
 		TokenManager: TokenManager{
 			JWTSecret: tokenManagerJwtSecret,
 		},
+		InternalRootCA:    internalRootCA,
+		InternalRootKey:   internalRootKey,
 		MachineAuthAPIKey: machineAuthAPIKey,
 		SystemUserAPIKey:  systemUserAPIKey,
 		TransferSecret:    revaTransferSecret,

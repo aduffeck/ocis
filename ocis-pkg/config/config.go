@@ -67,6 +67,8 @@ type Config struct {
 	Registry          string               `yaml:"registry"`
 	TokenManager      *shared.TokenManager `yaml:"token_manager"`
 	MachineAuthAPIKey string               `yaml:"machine_auth_api_key" env:"OCIS_MACHINE_AUTH_API_KEY" desc:"Machine auth API key used to validate internal requests necessary for the access to resources from other services."`
+	InternalRootCA    string               `yaml:"internal_root_ca" env:"OCIS_INTERNAL_ROOT_CA" desc:"The root CA used to validate the extension certificates against."`
+	InternalRootKey   string               `yaml:"internal_root_key" env:"OCIS_INTERNAL_ROOT_KEY" desc:"The RSA private key used to sign extension certificates with."`
 	TransferSecret    string               `yaml:"transfer_secret" env:"STORAGE_TRANSFER_SECRET"`
 	SystemUserID      string               `yaml:"system_user_id" env:"OCIS_SYSTEM_USER_ID" desc:"ID of the oCIS storage-system system user. Admins need to set the ID for the storage-system system user in this config option which is then used to reference the user. Any reasonable long string is possible, preferably this would be an UUIDv4 format."`
 	SystemUserAPIKey  string               `yaml:"system_user_api_key" env:"OCIS_SYSTEM_USER_API_KEY" desc:"API key for the storage-system system user."`

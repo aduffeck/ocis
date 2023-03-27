@@ -49,7 +49,7 @@ type GRPCServiceTLS struct {
 }
 
 type HTTPServiceTLS struct {
-	Enabled bool `yaml:"enabled" env:"OCIS_HTTP_TLS_ENABLED" desc:"Activates TLS for the http based services using the server certifcate and key configured via OCIS_HTTP_TLS_CERTIFICATE and OCIS_HTTP_TLS_KEY. If OCIS_HTTP_TLS_CERTIFICATE is not set a temporary server certificate is generated - to be used with PROXY_INSECURE_BACKEND=true."`
+	Enabled bool `yaml:"enabled" env:"OCIS_HTTP_TLS_ENABLED" desc:"Activates TLS for the http based services using the server certifcate and key configured via OCIS_HTTP_TLS_CERTIFICATE and OCIS_HTTP_TLS_KEY. If OCIS_HTTP_TLS_CERTIFICATE is not set a temporary server certificate is generated"`
 
 	Cert string `yaml:"cert" env:"OCIS_HTTP_TLS_CERTIFICATE" desc:"Path/File name of the TLS server certificate (in PEM format) for the http services."`
 	Key  string `yaml:"key" env:"OCIS_HTTP_TLS_KEY" desc:"Path/File name for the TLS certificate key (in PEM format) for the server certificate to use for the http services."`
@@ -77,6 +77,8 @@ type Commons struct {
 	TokenManager      *TokenManager   `mask:"struct" yaml:"token_manager"`
 	Reva              *Reva           `yaml:"reva"`
 	MachineAuthAPIKey string          `mask:"password" yaml:"machine_auth_api_key" env:"OCIS_MACHINE_AUTH_API_KEY" desc:"Machine auth API key used to validate internal requests necessary for the access to resources from other services."`
+	InternalRootCA    string          `yaml:"internal_root_ca" env:"OCIS_INTERNAL_ROOT_CA" desc:"The root CA used to validate the extension certificates against."`
+	InternalRootKey   string          `yaml:"internal_root_key" env:"OCIS_INTERNAL_ROOT_KEY" desc:"The RSA private key used to sign extension certificates with."`
 	TransferSecret    string          `mask:"password" yaml:"transfer_secret,omitempty" env:"REVA_TRANSFER_SECRET"`
 	SystemUserID      string          `yaml:"system_user_id" env:"OCIS_SYSTEM_USER_ID" desc:"ID of the oCIS storage-system system user. Admins need to set the ID for the storage-system system user in this config option which is then used to reference the user. Any reasonable long string is possible, preferably this would be an UUIDv4 format."`
 	SystemUserAPIKey  string          `mask:"password" yaml:"system_user_api_key" env:"SYSTEM_USER_API_KEY"`

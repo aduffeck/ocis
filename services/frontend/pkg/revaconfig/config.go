@@ -1,10 +1,12 @@
 package revaconfig
 
 import (
+	"fmt"
 	"net/url"
 	"path"
 	"strconv"
 
+	"github.com/owncloud/ocis/v2/ocis-pkg/crypto"
 	"github.com/owncloud/ocis/v2/ocis-pkg/version"
 	"github.com/owncloud/ocis/v2/services/frontend/pkg/config"
 )
@@ -63,6 +65,15 @@ func FrontendConfigFromStruct(cfg *config.Config) (map[string]interface{}, error
 		}
 	}
 
+	cert := []byte("")
+	key := []byte("")
+	if cfg.Commons.InternalRootCA != "" && cfg.Commons.InternalRootKey != "" {
+		cert, key, err = crypto.CertKeyPair(cfg.HTTP.Addr, cfg.Commons.InternalRootCA, cfg.Commons.InternalRootKey)
+		if err != nil {
+			return nil, fmt.Errorf("error creating temporary self-signed certificate: %w", err)
+		}
+	}
+
 	return map[string]interface{}{
 		"core": map[string]interface{}{
 			"tracing_enabled":      cfg.Tracing.Enabled,
@@ -79,6 +90,8 @@ func FrontendConfigFromStruct(cfg *config.Config) (map[string]interface{}, error
 		"http": map[string]interface{}{
 			"network": cfg.HTTP.Protocol,
 			"address": cfg.HTTP.Addr,
+			"cert":    string(cert),
+			"key":     string(key),
 			"middlewares": map[string]interface{}{
 				"cors": map[string]interface{}{
 					"allowed_origins":   cfg.HTTP.CORS.AllowedOrigins,
@@ -113,7 +126,7 @@ func FrontendConfigFromStruct(cfg *config.Config) (map[string]interface{}, error
 					"prefix":                 cfg.AppHandler.Prefix,
 					"transfer_shared_secret": cfg.TransferSecret,
 					"timeout":                86400,
-					"insecure":               cfg.AppHandler.Insecure,
+					"internal_root_ca":       cfg.Commons.InternalRootCA,
 					"webbaseuri":             webOpenInAppURL,
 					"web": map[string]interface{}{
 						"urlparamsmapping": map[string]string{
@@ -128,17 +141,17 @@ func FrontendConfigFromStruct(cfg *config.Config) (map[string]interface{}, error
 					},
 				},
 				"archiver": map[string]interface{}{
-					"prefix":        cfg.Archiver.Prefix,
-					"timeout":       86400,
-					"insecure":      cfg.Archiver.Insecure,
-					"max_num_files": cfg.Archiver.MaxNumFiles,
-					"max_size":      cfg.Archiver.MaxSize,
+					"prefix":           cfg.Archiver.Prefix,
+					"timeout":          86400,
+					"max_num_files":    cfg.Archiver.MaxNumFiles,
+					"max_size":         cfg.Archiver.MaxSize,
+					"internal_root_ca": cfg.Commons.InternalRootCA,
 				},
 				"datagateway": map[string]interface{}{
 					"prefix":                 cfg.DataGateway.Prefix,
 					"transfer_shared_secret": cfg.TransferSecret,
 					"timeout":                86400,
-					"insecure":               true,
+					"internal_root_ca":       cfg.Commons.InternalRootCA,
 				},
 				"ocs": map[string]interface{}{
 					"storage_registry_svc":     cfg.Reva.Address,

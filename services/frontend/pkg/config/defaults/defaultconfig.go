@@ -161,7 +161,6 @@ func EnsureDefaults(cfg *config.Config) {
 	if cfg.MachineAuthAPIKey == "" && cfg.Commons != nil && cfg.Commons.MachineAuthAPIKey != "" {
 		cfg.MachineAuthAPIKey = cfg.Commons.MachineAuthAPIKey
 	}
-
 }
 
 // Sanitize sanitized the configuration

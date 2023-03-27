@@ -19,15 +19,14 @@ func Server(opts ...Option) (http.Service, error) {
 	options := newOptions(opts...)
 
 	if options.Config.HTTP.TLS {
-		_, certErr := os.Stat(options.Config.HTTP.TLSCert)
-		_, keyErr := os.Stat(options.Config.HTTP.TLSKey)
-
-		if os.IsNotExist(certErr) || os.IsNotExist(keyErr) {
+		if options.Config.HTTP.TLSCert != "" && options.Config.HTTP.TLSKey != "" {
 			options.Logger.Info().Msgf("Generating certs")
-			if err := pkgcrypto.GenCert(options.Config.HTTP.TLSCert, options.Config.HTTP.TLSKey, options.Logger); err != nil {
+			if err := pkgcrypto.GenCert(options.Config.HTTP.Addr, options.Config.HTTP.TLSCert, options.Config.HTTP.TLSKey, options.Config.Commons.InternalRootCA, options.Config.Commons.InternalRootKey, options.Logger); err != nil {
 				options.Logger.Fatal().Err(err).Msg("Could not setup TLS")
 				os.Exit(1)
 			}
+		} else {
+			options.Logger.Fatal().Str("TLSCert", options.Config.HTTP.TLSCert).Str("TLSKey", options.Config.HTTP.TLSKey).Msg("invalid cert/key path configuration")
 		}
 	}
 
@@ -44,6 +43,8 @@ func Server(opts ...Option) (http.Service, error) {
 			Cert:    options.Config.HTTP.TLSCert,
 			Key:     options.Config.HTTP.TLSKey,
 		}),
+		http.InternalRootCA(options.Config.Commons.InternalRootCA),
+		http.InternalRootKey(options.Config.Commons.InternalRootKey),
 	)
 	if err != nil {
 		options.Logger.Error().

@@ -3,6 +3,7 @@ package crypto
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/tls"
@@ -107,7 +108,8 @@ func CertKeyPair(addr, rootCAPEM, rootKeyPEM string) ([]byte, []byte, error) {
 			cert.DNSNames = append(cert.DNSNames, h)
 		}
 	}
-	certPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
+
+	certPrivKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -125,7 +127,7 @@ func CertKeyPair(addr, rootCAPEM, rootKeyPEM string) ([]byte, []byte, error) {
 
 	// create private key
 	keyOut := bytes.NewBuffer(nil)
-	b := x509.MarshalPKCS1PrivateKey(certPrivKey)
+	b, err := x509.MarshalECPrivateKey(certPrivKey)
 	if err != nil {
 		return nil, nil, err
 	}

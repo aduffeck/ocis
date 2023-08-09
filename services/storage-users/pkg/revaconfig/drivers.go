@@ -148,6 +148,7 @@ func Ocis(cfg *config.Config) map[string]interface{} {
 			"cache_ttl":      cfg.FilemetadataCache.TTL / time.Second,
 			"cache_size":     cfg.FilemetadataCache.Size,
 		},
+		"groupcache_name": "storage-users",
 		"idcache": map[string]interface{}{
 			"cache_store":    cfg.IDCache.Store,
 			"cache_nodes":    cfg.IDCache.Nodes,
@@ -206,6 +207,7 @@ func OcisNoEvents(cfg *config.Config) map[string]interface{} {
 			"cache_ttl":      cfg.FilemetadataCache.TTL / time.Second,
 			"cache_size":     cfg.FilemetadataCache.Size,
 		},
+		"groupcache_name": "storage-users",
 		"idcache": map[string]interface{}{
 			"cache_store":    cfg.IDCache.Store,
 			"cache_nodes":    cfg.IDCache.Nodes,
@@ -269,6 +271,7 @@ func S3NG(cfg *config.Config) map[string]interface{} {
 			"cache_ttl":      cfg.FilemetadataCache.TTL / time.Second,
 			"cache_size":     cfg.FilemetadataCache.Size,
 		},
+		"groupcache_name": "storage-users",
 		"idcache": map[string]interface{}{
 			"cache_store":    cfg.IDCache.Store,
 			"cache_nodes":    cfg.IDCache.Nodes,
@@ -331,6 +334,7 @@ func S3NGNoEvents(cfg *config.Config) map[string]interface{} {
 			"cache_ttl":      cfg.FilemetadataCache.TTL / time.Second,
 			"cache_size":     cfg.FilemetadataCache.Size,
 		},
+		"groupcache_name": "storage-users",
 		"idcache": map[string]interface{}{
 			"cache_store":    cfg.IDCache.Store,
 			"cache_nodes":    cfg.IDCache.Nodes,

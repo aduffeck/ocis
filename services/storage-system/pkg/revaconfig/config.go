@@ -168,6 +168,7 @@ func metadataDrivers(cfg *config.Config) map[string]interface{} {
 				"cache_ttl":      cfg.FileMetadataCache.TTL / time.Second,
 				"cache_size":     cfg.FileMetadataCache.Size,
 			},
+			"groupcache_name": "storage-system",
 		},
 	}
 }

@@ -12,7 +12,6 @@ import (
 	userpb "github.com/cs3org/go-cs3apis/cs3/identity/user/v1beta1"
 	provider "github.com/cs3org/go-cs3apis/cs3/storage/provider/v1beta1"
 	revactx "github.com/cs3org/reva/v2/pkg/ctx"
-	"github.com/cs3org/reva/v2/pkg/storage/cache"
 	"github.com/cs3org/reva/v2/pkg/storage/fs/ocis/blobstore"
 	"github.com/cs3org/reva/v2/pkg/storage/utils/decomposedfs/lookup"
 	"github.com/cs3org/reva/v2/pkg/storage/utils/decomposedfs/metadata"
@@ -312,7 +311,7 @@ func backend(root, backend string) metadata.Backend {
 	case "xattrs":
 		return metadata.XattrsBackend{}
 	case "mpk":
-		return metadata.NewMessagePackBackend(root, cache.Config{})
+		return metadata.NewMessagePackBackend(root, "")
 	}
 	return metadata.NullBackend{}
 }

@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	tw "github.com/olekukonko/tablewriter"
@@ -29,7 +32,265 @@ func BenchmarkCommand(cfg *config.Config) *cli.Command {
 		Name:        "benchmark",
 		Usage:       "cli tools to test low and high level performance",
 		Category:    "benchmark",
-		Subcommands: []*cli.Command{BenchmarkClientCommand(cfg), BenchmarkSyscallsCommand(cfg)},
+		Subcommands: []*cli.Command{ConcurrentAccessCommand(cfg), BenchmarkClientCommand(cfg), BenchmarkSyscallsCommand(cfg)},
+	}
+}
+
+// ConcurrentAccessCommand runs several clients that read and write the same file
+func ConcurrentAccessCommand(cfg *config.Config) *cli.Command {
+	return &cli.Command{
+		Name:  "concurrent-access",
+		Usage: "Start a number of clients that concurrently read and write the same file. The options mimic curl, but URL must be at the end.",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "user",
+				Aliases: []string{"u"},
+				Value:   "admin:admin",
+				Usage:   "Specify the user name and password to use for server authentication.",
+			},
+			&cli.BoolFlag{
+				Name:    "insecure",
+				Aliases: []string{"k"},
+				Usage:   "Skip the TLS verification step and proceed without checking.",
+			},
+			&cli.StringFlag{
+				Name:  "bearer-token-command",
+				Usage: "Command to execute for a bearer token, e.g. 'oidc-token OCIS'. When set, disables basic auth.",
+			},
+			&cli.IntFlag{
+				Name:    "concurrency",
+				Aliases: []string{"c"},
+				Value:   2,
+				Usage:   "Number of parallel clients to start.",
+			},
+			&cli.IntFlag{
+				Name:    "iterations",
+				Aliases: []string{"i"},
+				Value:   20,
+				Usage:   "Number of cycles to complete for each client.",
+			},
+		},
+		Category: "benchmark",
+		Action: func(c *cli.Context) error {
+			o := clientOptions{
+				url:      c.Args().First(),
+				insecure: c.Bool("insecure"),
+				jobs:     c.Int("jobs"),
+				headers:  make(map[string]string),
+				data:     []byte(c.String("data")),
+			}
+			if o.url == "" {
+				log.Fatal(errors.New("no URL specified"))
+			}
+
+			user := c.String("user")
+			o.auth = func() string {
+				return "Basic " + base64.StdEncoding.EncodeToString([]byte(user))
+			}
+
+			btc := c.String("bearer-token-command")
+			if btc != "" {
+				parts := strings.SplitN(btc, " ", 2)
+				var cmd *exec.Cmd
+				o.auth = func() string {
+					if len(parts) > 1 {
+						cmd = exec.Command(parts[0], parts[1])
+					} else {
+						cmd = exec.Command(parts[0])
+					}
+					output, err := cmd.CombinedOutput()
+					if err != nil {
+						fmt.Println(err)
+					}
+					return "Bearer " + string(output)
+				}
+			}
+
+			tr := &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: o.insecure},
+			}
+			client := &http.Client{Transport: tr}
+
+			// Reset file
+			req, err := http.NewRequest("PUT", o.url, bytes.NewReader([]byte("{}")))
+			if err != nil {
+				return err
+			}
+			req.Header.Set("Authorization", strings.TrimSpace(o.auth()))
+			res, err := client.Do(req)
+			if err != nil {
+				return err
+			}
+			if res.StatusCode != 204 {
+				return fmt.Errorf("sould not reset test file: %s", res.Status)
+			}
+
+			wg := sync.WaitGroup{}
+			for i := 0; i < c.Int("concurrency"); i++ {
+				wg.Add(1)
+				go func(clientID int) {
+					currentIteration := 0
+					clientLog := func(format string, v ...any) {
+						pad := strings.Repeat("        ", clientID)
+						log.Printf(pad+"%d/%d: "+format, append([]interface{}{clientID, currentIteration}, v...)...)
+					}
+					payload := map[int]int{
+						clientID: 0,
+					}
+					tr := &http.Transport{
+						TLSClientConfig: &tls.Config{InsecureSkipVerify: o.insecure},
+					}
+					client := &http.Client{Transport: tr}
+					etag := ""
+					readFileFunc := func() (*http.Response, []byte, string, error) {
+						req, err := http.NewRequest("GET", o.url, bytes.NewReader(o.data))
+						if err != nil {
+							clientLog("could not create request: %s\n", err)
+							return nil, nil, "", err
+						}
+						req.Header.Set("Authorization", strings.TrimSpace(o.auth()))
+						if etag != "" {
+							req.Header.Set("If-None-Match", etag)
+						}
+						res, err := client.Do(req)
+						if err != nil {
+							clientLog("GET failed: %s\n", err)
+							return nil, nil, "", err
+						}
+						if res.StatusCode != 200 {
+							clientLog("GET failed: %s\n", res.Status)
+							return res, nil, "", err
+						}
+						etag = res.Header.Get("OC-ETag")
+						if ocetag := res.Header.Get("OC-ETag"); ocetag != "" {
+							etag = ocetag
+						}
+						d, err := io.ReadAll(res.Body)
+						if err != nil {
+							return nil, nil, "", err
+						}
+						return res, d, etag, nil
+					}
+					putFileFunc := func(d []byte, etag string) (*http.Response, string, error) {
+						req, err := http.NewRequest("PUT", o.url, bytes.NewReader(d))
+						if err != nil {
+							return nil, "", err
+						}
+						req.Header.Set("Authorization", strings.TrimSpace(o.auth()))
+						req.Header.Set("If-Match", etag)
+
+						res, err := client.Do(req)
+						if err != nil {
+							return nil, "", err
+						}
+						etag = res.Header.Get("OC-ETag")
+						if ocetag := res.Header.Get("OC-ETag"); ocetag != "" {
+							etag = ocetag
+						}
+						return res, etag, nil
+					}
+					// Read file
+					oldEtag := etag
+					res, d, etag, err := readFileFunc()
+					if err != nil {
+						clientLog("Reading file failed: %s\n", err)
+					}
+					if res.StatusCode != 200 {
+						clientLog("Reading file failed: %s\n", res.Status)
+					}
+					clientLog("Downloaded %s -> %s: %s\n", oldEtag, etag, string(d))
+
+					for j := 0; j < c.Int("iterations"); j++ {
+						currentIteration++
+						payload = map[int]int{
+							clientID: 0,
+						}
+						// Update this goroutine's counter
+						if len(d) != 0 {
+							err = json.Unmarshal(d, &payload)
+							if err != nil {
+								clientLog("unmarshalling failed: %s\n", err)
+								continue
+							}
+						}
+						payload[clientID]++
+
+						// Write file back
+						d, err = json.Marshal(payload)
+						if err != nil {
+							clientLog("marshalling failed: %s\n", err)
+							continue
+						}
+						oldEtag := etag
+						res, etag, err = putFileFunc(d, etag)
+						if err != nil {
+							clientLog("PUT failed: %s\n", err)
+							continue
+						}
+
+						// handle conflicts
+						switch res.StatusCode {
+						case 204:
+							clientLog("Uploaded %s -> %s: %s\n", oldEtag, etag, string(d))
+						case 409, 412:
+							clientLog("CONFLICT (%d) -> retrying...\n", res.StatusCode)
+							success := false
+							for retries := 10; retries > 0; retries-- {
+								res, d, etag, err = readFileFunc()
+								if err != nil {
+									clientLog("CONFLICT -> reading file failed: %s\n", err)
+									continue
+								}
+								if res.StatusCode != 200 {
+									clientLog("CONFLICT -> reading file failed: %s\n", res.Status)
+									continue
+								}
+								clientLog("CONFLICT -> Downloaded %s -> %s: %s\n", oldEtag, etag, string(d))
+								payload = map[int]int{
+									clientID: 0,
+								}
+								if len(d) != 0 {
+									err = json.Unmarshal(d, &payload)
+									if err != nil {
+										clientLog("CONFLICT -> unmarshalling failed: %s\n", err)
+										continue
+									}
+								}
+								payload[clientID]++
+								d, err = json.Marshal(payload)
+								if err != nil {
+									clientLog("CONFLICT -> marshalling failed: %s\n", err)
+									continue
+								}
+								res, etag, err = putFileFunc(d, etag)
+								if err != nil {
+									clientLog("CONFLICT -> PUT failed: %s\n", err)
+									continue
+								}
+								if res.StatusCode == 204 {
+									clientLog("CONFLICT -> Uploaded %s -> %s: %s", oldEtag, etag, d)
+									success = true
+									break
+								} else {
+									clientLog("CONFLICT -> PUT failed: %s\n", res.Status)
+								}
+							}
+							if !success {
+								clientLog("CONFLICT -> failed...\n")
+							}
+						}
+					}
+					wg.Done()
+				}(i)
+			}
+			wg.Wait()
+			// log.Println("Result:")
+			// for client, count := range payload {
+			// 	log.Println("%d: %d", client, count)
+			// }
+			return nil
+
+		},
 	}
 }
 

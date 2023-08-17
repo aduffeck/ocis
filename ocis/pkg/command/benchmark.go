@@ -235,7 +235,7 @@ func ConcurrentAccessCommand(cfg *config.Config) *cli.Command {
 						case 409, 412:
 							clientLog("CONFLICT (%d) -> retrying...\n", res.StatusCode)
 							success := false
-							for retries := 10; retries > 0; retries-- {
+							for retries := 100; retries > 0; retries-- {
 								res, d, etag, err = readFileFunc()
 								if err != nil {
 									clientLog("CONFLICT -> reading file failed: %s\n", err)
